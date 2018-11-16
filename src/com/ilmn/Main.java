@@ -6,5 +6,6 @@ public class Main {
 
         Board board = new Board();
         board.show();
+        Game game = new Game(board);
     }
 }
