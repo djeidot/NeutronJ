@@ -22,14 +22,15 @@ public class Board {
     }
 
     public void show() {
-        System.out.print("    +-----+\n");
+        System.out.print("       12345\n");
+        System.out.print("      +-----+\n");
         for (int r = 0; r < 5; r++) {
-            System.out.print("    |");
+            System.out.print("    " + (char)('A'+r) + " |");
             for (int c = 0; c < 5; c++) {
                 System.out.print(board[r][c].getMark());
             }
             System.out.print("|\n");
         }
-        System.out.print("    +-----+");
+        System.out.print("      +-----+");
     }
 }
