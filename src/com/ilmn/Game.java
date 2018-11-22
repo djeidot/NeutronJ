@@ -8,7 +8,10 @@ public class Game {
 
     public Game(Board board) {
         this.board = board;
-        loop();
+        board.tryMove(new Position(2,2), Piece.Neutron, Direction.S);
+        board.show();
+        board.tryMove(new Position(2, 3), Piece.Neutron, Direction.S);
+        //loop();
     }
 
     private void loop() {
