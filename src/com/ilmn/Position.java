@@ -13,6 +13,14 @@ public class Position {
         this.y = pos1.getY();
     }
 
+    public Position(String posStr) {
+        this.y = (int)(posStr.charAt(0) - 'A');
+        this.x = Integer.parseInt(posStr.substring(1, 2))  - 1;
+        if (this.isOffScreen()) {
+            throw new IndexOutOfBoundsException(posStr + " is not a valid position.");
+        }
+    }
+
     public void move(Direction dir) {
         x += dir.getDirX();
         y += dir.getDirY();

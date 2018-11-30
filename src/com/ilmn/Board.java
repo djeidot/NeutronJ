@@ -1,5 +1,7 @@
 package com.ilmn;
 
+import java.security.InvalidParameterException;
+
 public class Board {
 
     private Piece[][] board = new Piece[5][5];
@@ -32,8 +34,8 @@ public class Board {
     }
 
     public void show() {
-        System.out.print("       1 2 3 4 5\n");
-        System.out.print("      +---------+\n");
+        System.out.println("       1 2 3 4 5");
+        System.out.println("      +---------+");
         for (int y = 0; y < 5; y++) {
             System.out.print("    " + (char) ('A' + y) + " |");
             for (int x = 0; x < 5; x++) {
@@ -57,7 +59,7 @@ public class Board {
         return !pos2.isOffScreen() && pieceAt(pos2) == Piece.Empty;
     }
 
-    public Position move(Position pos, Direction dir) {
+    private Position moveInternal(Position pos, Direction dir) {
         Position posEnd = new Position(pos);
         while (canMove(posEnd, dir)) {
             posEnd.move(dir);
@@ -66,20 +68,31 @@ public class Board {
         return posEnd;
     }
 
-    public boolean tryMove(Position pos, Piece piece, Direction dir) {
+    public void move(Position pos, Piece piece, Direction dir) throws InvalidMoveException {
         if (!hasPiece(pos, piece)) {
             if (pieceAt(pos) == Piece.Empty) {
-                System.out.print("No piece in " + pos.toString() + " to move.");
+                throw new InvalidMoveException("No piece in " + pos.toString() + " to move.");
             } else {
-                System.out.print("Piece in " + pos.toString() + " is not a " + piece + " piece.");
+                throw new InvalidMoveException("Piece in " + pos.toString() + " is not a " + piece + " piece.");
             }
-            return false;
         } else if (!canMove(pos, dir)) {
-            System.out.print("Can't move piece " + pos.toString() + " in direction " + dir.toString());
-            return false;
+            throw new InvalidMoveException("Can't move piece " + pos.toString() + " in direction " + dir.toString());
         } else {
-            move(pos, dir);
-            return true;
+            moveInternal(pos, dir);
         }
+
+        show();
+    }
+
+    public Position getNeutron() {
+        for (int y = 0; y < 5; y++) {
+            for (int x = 0; x < 5; x++) {
+                Position pos = new Position(x, y);
+                if (hasPiece(pos, Piece.Neutron)) {
+                    return pos;
+                }
+            }
+        }
+        throw new RuntimeException("Error - Neutron not found in board.");
     }
 }
