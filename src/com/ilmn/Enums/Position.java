@@ -1,4 +1,4 @@
-package com.ilmn;
+package com.ilmn.Enums;
 
 public class Position {
     int x, y;
@@ -15,8 +15,12 @@ public class Position {
 
     public Position(String posStr) {
         this.y = (int)(posStr.charAt(0) - 'A');
-        this.x = Integer.parseInt(posStr.substring(1, 2))  - 1;
-        if (this.isOffScreen()) {
+        try {
+            this.x = Integer.parseInt(posStr.substring(1, 2)) - 1;
+            if (this.isOffScreen()) {
+                throw new IndexOutOfBoundsException(posStr + " is not a valid position.");
+            }
+        } catch (NumberFormatException ex) {
             throw new IndexOutOfBoundsException(posStr + " is not a valid position.");
         }
     }
@@ -39,7 +43,7 @@ public class Position {
         return y;
     }
 
-    boolean isOffScreen() {
+    public boolean isOffScreen() {
         return x < 0 || x >= 5 || y < 0 || y >= 5;
     }
 }

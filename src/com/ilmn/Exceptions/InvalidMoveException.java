@@ -1,4 +1,4 @@
-package com.ilmn;
+package com.ilmn.Exceptions;
 
 public class InvalidMoveException extends Exception {
     public InvalidMoveException(String message) {

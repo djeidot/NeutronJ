@@ -1,6 +1,9 @@
 package com.ilmn;
 
-import java.security.InvalidParameterException;
+import com.ilmn.Enums.Direction;
+import com.ilmn.Enums.Piece;
+import com.ilmn.Enums.Position;
+import com.ilmn.Exceptions.InvalidMoveException;
 
 public class Board {
 
@@ -94,5 +97,26 @@ public class Board {
             }
         }
         throw new RuntimeException("Error - Neutron not found in board.");
+    }
+
+    public Piece getNeutronBackLine() {
+        Position posNeutron = getNeutron();
+        if (posNeutron.getY() == 0) {
+            return Piece.PlayerX;
+        } else if (posNeutron.getY() == 4) {
+            return Piece.PlayerO;
+        } else {
+            return Piece.Empty;
+        }
+    }
+
+    public boolean isNeutronBlocked() {
+        Position posNeutron = getNeutron();
+        for (Direction dir : Direction.values()) {
+            if (canMove(posNeutron, dir)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -1,10 +1,8 @@
-package com.ilmn;
+package com.ilmn.Enums;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import javafx.geometry.Pos;
 
 import static org.junit.Assert.*;
 
@@ -44,5 +42,17 @@ public class PositionTest {
     public void ctor_throws_A6() {
         exception.expect(IndexOutOfBoundsException.class);
         Position pos = new Position("A6");
+    }
+
+    @Test
+    public void ctor_throws_1D() {
+        exception.expect(IndexOutOfBoundsException.class);
+        Position pos = new Position("1D");
+    }
+
+    @Test
+    public void ctor_throws_11() {
+        exception.expect(IndexOutOfBoundsException.class);
+        Position pos = new Position("11");
     }
 }

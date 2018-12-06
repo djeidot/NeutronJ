@@ -1,4 +1,4 @@
-package com.ilmn;
+package com.ilmn.Enums;
 
 public enum Direction {
     N  (0, -1),
