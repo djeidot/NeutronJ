@@ -1,6 +1,7 @@
 package com.ilmn;
 
 import com.ilmn.Enums.Piece;
+import com.ilmn.Players.Cpu1;
 import com.ilmn.Players.Human;
 import com.ilmn.Players.Player;
 
@@ -8,12 +9,12 @@ public class Game {
 
     private Board board;
     private Player player0;
-    private Player playerX;
+    private Cpu1 playerX;
 
     public Game(Board board) {
         this.board = board;
         this.player0 = new Human(Piece.PlayerO, board);
-        this.playerX = new Human(Piece.PlayerX, board);
+        this.playerX = new Cpu1(Piece.PlayerX, board);
         loop();
     }
 
