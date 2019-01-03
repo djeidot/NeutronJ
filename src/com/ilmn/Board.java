@@ -8,9 +8,19 @@ import com.ilmn.Exceptions.InvalidMoveException;
 public class Board {
 
     private Piece[][] board = new Piece[5][5];
+    private boolean invisible = false;
 
     public Board() {
         initBoard();
+    }
+
+    public Board(Board other) {
+        for (int x = 0; x < 5; x++) {
+            for (int y = 0; y < 5; y++) {
+                this.board[x][y] = other.board[x][y];
+            }
+        }
+        invisible = true;
     }
 
     private Piece pieceAt(Position position) {
@@ -37,6 +47,9 @@ public class Board {
     }
 
     public void show() {
+
+        if (invisible) return;
+
         System.out.println("       1 2 3 4 5");
         System.out.println("      +---------+");
         for (int y = 0; y < 5; y++) {

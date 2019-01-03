@@ -14,4 +14,14 @@ public enum Piece {
     public String getMark() {
         return mark;
     }
+
+    public Piece opponent() {
+        if (this.equals(PlayerO)) {
+            return PlayerX;
+        } else if (this.equals(PlayerX)) {
+            return PlayerO;
+        } else {
+            return this;
+        }
+    }
 }

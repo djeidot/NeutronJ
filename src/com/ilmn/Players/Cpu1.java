@@ -11,6 +11,7 @@ import com.ilmn.Enums.Position;
 import com.ilmn.Exceptions.InvalidMoveException;
 import javafx.util.Pair;
 
+// Cpu1 is the most basic AI. It simply selects a random move from all possible ones
 public class Cpu1 extends Player {
 
     private Random random;
@@ -46,7 +47,7 @@ public class Cpu1 extends Player {
         try {
             board.move(pos, playerPiece, dir);
         } catch (InvalidMoveException e) {
-            System.out.println("Cpu1 made a wrong move - " + e.getMessage());
+            System.out.println("Cpu made a wrong move - " + e.getMessage());
         }
     }
 
@@ -68,7 +69,7 @@ public class Cpu1 extends Player {
         return new Pair<>(pos, dir);
     }
 
-    private List<Direction> getPossibleMoves(Position pos) {
+    protected List<Direction> getPossibleMoves(Position pos) {
         List<Direction> moves = new ArrayList<Direction>();
 
         for (Direction dir : Direction.values()) {
