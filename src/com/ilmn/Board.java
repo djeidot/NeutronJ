@@ -8,6 +8,7 @@ import com.ilmn.Exceptions.InvalidMoveException;
 public class Board {
 
     private Piece[][] board = new Piece[5][5];
+
     private boolean invisible = false;
 
     public Board() {
@@ -21,6 +22,10 @@ public class Board {
             }
         }
         invisible = true;
+    }
+
+    public boolean isInvisible() {
+        return invisible;
     }
 
     private Piece pieceAt(Position position) {
@@ -132,4 +137,5 @@ public class Board {
         }
         return true;
     }
+
 }

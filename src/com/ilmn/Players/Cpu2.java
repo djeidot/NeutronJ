@@ -19,7 +19,7 @@ public class Cpu2 extends Cpu1 {
 
     @Override
     protected Direction chooseNeutronDirection(Position posNeutron) {
-        List<Direction> moves = getPossibleMoves(posNeutron);
+        List<Direction> moves = getPossibleMoves(posNeutron, board);
         List<Direction> winningMoves = new ArrayList<>();
         for (Direction move : moves) {
             if (canMoveNeutronToOpponentsBackline(move)) {
@@ -34,7 +34,7 @@ public class Cpu2 extends Cpu1 {
         }
     }
 
-    private boolean canMoveNeutronToOpponentsBackline(Direction move) {
+    protected boolean canMoveNeutronToOpponentsBackline(Direction move) {
         Board vBoard1 = new Board(board);
         try {
             vBoard1.move(vBoard1.getNeutron(), Piece.Neutron, move);
@@ -51,9 +51,9 @@ public class Cpu2 extends Cpu1 {
         List<Pair<Position, Direction>> otherMoves = new ArrayList<>();
 
         for (Position pos : positions) {
-            List<Direction> moves = getPossibleMoves(pos);
+            List<Direction> moves = getPossibleMoves(pos, board);
             for (Direction move : moves) {
-                if (canTrapNeutron(pos, move)) {
+                if (canTrapNeutron(pos, move, board)) {
                     winningMoves.add(new Pair<>(pos, move));
                 } else {
                     otherMoves.add(new Pair<>(pos, move));
@@ -69,7 +69,7 @@ public class Cpu2 extends Cpu1 {
         }
     }
 
-    private boolean canTrapNeutron(Position pos, Direction move) {
+    protected boolean canTrapNeutron(Position pos, Direction move, Board board) {
         Board vBoard1 = new Board(board);
         try {
             vBoard1.move(pos, playerPiece, move);

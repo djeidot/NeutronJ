@@ -52,7 +52,7 @@ public class Cpu1 extends Player {
     }
 
     protected Direction chooseNeutronDirection(Position posNeutron) {
-        List<Direction> moves = getPossibleMoves(posNeutron);
+        List<Direction> moves = getPossibleMoves(posNeutron, board);
         return choice(moves);
     }
 
@@ -63,13 +63,13 @@ public class Cpu1 extends Player {
 
         while (moves.isEmpty()) {
             pos = choice(positions);
-            moves = getPossibleMoves(pos);
+            moves = getPossibleMoves(pos, board);
         }
         Direction dir = choice(moves);
         return new Pair<>(pos, dir);
     }
 
-    protected List<Direction> getPossibleMoves(Position pos) {
+    protected List<Direction> getPossibleMoves(Position pos, Board board) {
         List<Direction> moves = new ArrayList<Direction>();
 
         for (Direction dir : Direction.values()) {
