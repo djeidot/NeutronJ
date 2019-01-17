@@ -36,7 +36,7 @@ public class Position {
 
     @Override
     public String toString() {
-        return "" + (char)('A'+y) + x;
+        return "" + (char)('A'+y) + (x+1);
     }
 
     public int getY() {

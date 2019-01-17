@@ -12,7 +12,7 @@ import javafx.util.Pair;
 
 public class Cpu3 extends Cpu2 {
 
-    class PlayerMove {
+    protected class PlayerMove {
         private Direction neutronMove;
         private Pair<Position, Direction> pieceMove;
         private boolean winningMove;
@@ -50,8 +50,8 @@ public class Cpu3 extends Cpu2 {
     }
 
     @Override
-    protected Direction chooseNeutronDirection(Position posNeutron) {
-        this.playerMove = choice(getPlayerMoves(posNeutron, this.playerPiece, this.board));
+    protected Direction chooseNeutronDirection() {
+        this.playerMove = choice(getPlayerMoves(this.playerPiece, this.board));
         return this.playerMove.getNeutronMove();
     }
 
@@ -60,12 +60,12 @@ public class Cpu3 extends Cpu2 {
         return this.playerMove.getPieceMove();
     }
 
-    protected List<PlayerMove> getPlayerMoves(Position posNeutron, Piece playerPiece, Board board) {
+    protected List<PlayerMove> getPlayerMoves(Piece playerPiece, Board board) {
         // Returns a list of possible moves
         // If there is a list of winning moves only that list is returned
         // Otherwise it returns a list of normal moves
 
-        List<Direction> neutronMoves = getPossibleMoves(posNeutron, board);
+        List<Direction> neutronMoves = getPossibleMoves(board.getNeutron(), board);
         List<PlayerMove> winningNeutronMoves = new ArrayList<>();
         for (Direction move : neutronMoves) {
             if (canMoveNeutronToOpponentsBackline(move)) {
@@ -82,18 +82,18 @@ public class Cpu3 extends Cpu2 {
         List<PlayerMove> winningPieceMoves = new ArrayList<>();
         List<PlayerMove> otherPieceMoves = new ArrayList<>();
         for (Direction neutronMove : neutronMoves) {
-            Board vBoard2 = new Board(board);
+            Board vBoard3 = new Board(board);
             try {
-                vBoard2.move(vBoard2.getNeutron(), Piece.Neutron, neutronMove);
+                vBoard3.move(vBoard3.getNeutron(), Piece.Neutron, neutronMove);
             } catch (InvalidMoveException e) {
                 System.out.println("Cpu3 made a wrong move - " + e.getMessage());
             }
-            List<Position> positions = getPlayerPositions();
+            List<Position> positions = getPlayerPositions(vBoard3, playerPiece);
 
             for (Position pos : positions) {
-                List<Direction> moves = getPossibleMoves(pos, vBoard2);
+                List<Direction> moves = getPossibleMoves(pos, vBoard3);
                 for (Direction move : moves) {
-                    if (canTrapNeutron(pos, move, vBoard2)) {
+                    if (canTrapNeutron(pos, move, playerPiece, vBoard3)) {
                         winningPieceMoves.add(new PlayerMove(neutronMove, pos, move, true));
                     } else {
                         otherPieceMoves.add(new PlayerMove(neutronMove, pos, move, false));

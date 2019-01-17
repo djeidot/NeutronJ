@@ -4,6 +4,7 @@ import com.ilmn.Enums.Piece;
 import com.ilmn.Players.Cpu1;
 import com.ilmn.Players.Cpu2;
 import com.ilmn.Players.Cpu3;
+import com.ilmn.Players.Cpu4;
 import com.ilmn.Players.Human;
 import com.ilmn.Players.Player;
 
@@ -15,8 +16,8 @@ public class Game {
 
     public Game(Board board) {
         this.board = board;
-        this.player0 = new Cpu3(Piece.PlayerO, board);
-        this.playerX = new Cpu3(Piece.PlayerX, board);
+        this.player0 = new Cpu4(Piece.PlayerO, board);
+        this.playerX = new Cpu4(Piece.PlayerX, board);
         loop();
     }
 

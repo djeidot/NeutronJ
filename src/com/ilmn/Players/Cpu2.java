@@ -18,8 +18,8 @@ public class Cpu2 extends Cpu1 {
     }
 
     @Override
-    protected Direction chooseNeutronDirection(Position posNeutron) {
-        List<Direction> moves = getPossibleMoves(posNeutron, board);
+    protected Direction chooseNeutronDirection() {
+        List<Direction> moves = getPossibleMoves(board.getNeutron(), board);
         List<Direction> winningMoves = new ArrayList<>();
         for (Direction move : moves) {
             if (canMoveNeutronToOpponentsBackline(move)) {
@@ -35,25 +35,25 @@ public class Cpu2 extends Cpu1 {
     }
 
     protected boolean canMoveNeutronToOpponentsBackline(Direction move) {
-        Board vBoard1 = new Board(board);
+        Board vBoard2 = new Board(board);
         try {
-            vBoard1.move(vBoard1.getNeutron(), Piece.Neutron, move);
+            vBoard2.move(vBoard2.getNeutron(), Piece.Neutron, move);
         } catch (InvalidMoveException e) {
             System.out.println("Cpu2 made a wrong move - " + e.getMessage());
         }
-        return vBoard1.getNeutronBackLine() == playerPiece.opponent();
+        return vBoard2.getNeutronBackLine() == playerPiece.opponent();
     }
 
     @Override
     protected Pair<Position, Direction> choosePlayerPositionAndDirection() {
-        List<Position> positions = getPlayerPositions();
+        List<Position> positions = getPlayerPositions(this.board, this.playerPiece);
         List<Pair<Position, Direction>> winningMoves = new ArrayList<>();
         List<Pair<Position, Direction>> otherMoves = new ArrayList<>();
 
         for (Position pos : positions) {
             List<Direction> moves = getPossibleMoves(pos, board);
             for (Direction move : moves) {
-                if (canTrapNeutron(pos, move, board)) {
+                if (canTrapNeutron(pos, move, this.playerPiece, board)) {
                     winningMoves.add(new Pair<>(pos, move));
                 } else {
                     otherMoves.add(new Pair<>(pos, move));
@@ -69,15 +69,15 @@ public class Cpu2 extends Cpu1 {
         }
     }
 
-    protected boolean canTrapNeutron(Position pos, Direction move, Board board) {
-        Board vBoard1 = new Board(board);
+    protected boolean canTrapNeutron(Position pos, Direction move, Piece playerPiece, Board board) {
+        Board vBoard2 = new Board(board);
         try {
-            vBoard1.move(pos, playerPiece, move);
+            vBoard2.move(pos, playerPiece, move);
         } catch (InvalidMoveException e) {
             System.out.println("Cpu2 made a wrong move - " + e.getMessage());
         }
 
-        return vBoard1.isNeutronBlocked();
+        return vBoard2.isNeutronBlocked();
     }
 
 }

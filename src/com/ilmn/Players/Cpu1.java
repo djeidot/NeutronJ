@@ -23,13 +23,11 @@ public class Cpu1 extends Player {
 
     @Override
     public void MoveNeutron() {
-        Position posNeutron = board.getNeutron();
-
-        Direction dir = chooseNeutronDirection(posNeutron);
+        Direction dir = chooseNeutronDirection();
 
         System.out.println("Player " + playerPiece.getMark() + " moving neutron to " + dir);
         try {
-            board.move(posNeutron, Piece.Neutron, dir);
+            board.move(board.getNeutron(), Piece.Neutron, dir);
         } catch (InvalidMoveException e) {
             System.out.println("Cpu1 made a wrong move - " + e.getMessage());
         }
@@ -51,13 +49,13 @@ public class Cpu1 extends Player {
         }
     }
 
-    protected Direction chooseNeutronDirection(Position posNeutron) {
-        List<Direction> moves = getPossibleMoves(posNeutron, board);
+    protected Direction chooseNeutronDirection() {
+        List<Direction> moves = getPossibleMoves(board.getNeutron(), board);
         return choice(moves);
     }
 
     protected Pair<Position, Direction> choosePlayerPositionAndDirection() {
-        List<Position> positions = getPlayerPositions();
+        List<Position> positions = getPlayerPositions(this.board, this.playerPiece);
         List<Direction> moves = new ArrayList<>();
         Position pos = new Position(1,1);
 
@@ -80,7 +78,7 @@ public class Cpu1 extends Player {
         return moves;
     }
 
-    List<Position> getPlayerPositions() {
+    static List<Position> getPlayerPositions(Board board, Piece playerPiece) {
         List<Position> positions = new ArrayList<>();
         for (int y = 0; y < 5; y++) {
             for (int x = 0; x < 5; x++) {
