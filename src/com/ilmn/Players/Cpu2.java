@@ -10,7 +10,8 @@ import com.ilmn.Enums.Position;
 import com.ilmn.Exceptions.InvalidMoveException;
 import javafx.util.Pair;
 
-// Cpu2 will choose a direct winning move if there is one available. However it treats neutron and piece moves separately.
+// Cpu2 will choose a direct winning move if there is one available and avoids a losing move unless it's the only choice. 
+// However it treats neutron and piece moves separately.
 public class Cpu2 extends Cpu1 {
 
     public Cpu2(Piece playerPiece, Board board) {
@@ -21,27 +22,38 @@ public class Cpu2 extends Cpu1 {
     protected Direction chooseNeutronDirection() {
         List<Direction> moves = getPossibleMoves(board.getNeutron(), board);
         List<Direction> winningMoves = new ArrayList<>();
+        List<Direction> losingMoves = new ArrayList<>();
+        List<Direction> otherMoves = new ArrayList<>();
         for (Direction move : moves) {
-            if (canMoveNeutronToOpponentsBackline(move)) {
+            if (canMoveNeutronToPlayersBackline(board, playerPiece.opponent(), move)) {
                 winningMoves.add(move);
+            } else if (canMoveNeutronToPlayersBackline(board, playerPiece, move)) {
+                losingMoves.add(move);
+            } else {
+                otherMoves.add(move);
             }
         }
         if (!winningMoves.isEmpty()) {
             System.out.println("Player " + playerPiece.getMark() + " has a winning move");
             return choice(winningMoves);
+        } else if (!otherMoves.isEmpty()) {
+            return choice(otherMoves);
+        } else if (!losingMoves.isEmpty()) {
+            System.out.println("Player " + playerPiece.getMark() + " forced to make a losing move");
+            return choice(losingMoves);
         } else {
-            return choice(moves);
+            throw new RuntimeException("No possible neutron moves - game should have been finished by now.");
         }
     }
 
-    protected boolean canMoveNeutronToOpponentsBackline(Direction move) {
+    protected boolean canMoveNeutronToPlayersBackline(Board board, Piece playerPiece, Direction move) {
         Board vBoard2 = new Board(board);
         try {
             vBoard2.move(vBoard2.getNeutron(), Piece.Neutron, move);
         } catch (InvalidMoveException e) {
             System.out.println("Cpu2 made a wrong move - " + e.getMessage());
         }
-        return vBoard2.getNeutronBackLine() == playerPiece.opponent();
+        return vBoard2.getNeutronBackLine() == playerPiece;
     }
 
     @Override
@@ -62,7 +74,7 @@ public class Cpu2 extends Cpu1 {
         }
 
         if (!winningMoves.isEmpty()) {
-            System.out.println("Player " + playerPiece.getMark() + " has a winning move");
+            board.println("Player " + playerPiece.getMark() + " has a winning move");
             return choice(winningMoves);
         } else {
             return choice(otherMoves);

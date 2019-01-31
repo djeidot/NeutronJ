@@ -8,7 +8,7 @@ import com.ilmn.Enums.Piece;
 import com.ilmn.Exceptions.InvalidMoveException;
 
 public class Cpu4 extends Cpu3 {
-    
+
     // Cpu4 will try to anticipate winning moves by the opponent player so that it can identify
     // and avoid losing moves by the current player
     public Cpu4(Piece playerPiece, Board board) {
@@ -25,14 +25,15 @@ public class Cpu4 extends Cpu3 {
         // Winning and other moves are gotten from the Cpu3 version of this method so we can call it now
         List<PlayerMove> startingMoves = super.getPlayerMoves(playerPiece, board);
 
-        if (startingMoves.get(0).isWinningMove()) {
+        if (startingMoves.get(0).getMoveType() == MoveType.winning || startingMoves.get(0).getMoveType() == MoveType.losing) {
             return startingMoves;
         }
-        
-        // Lets pick the other moves and determine if they are losing moves
+
+        // Lets pick the other moves and determine if they are losing or winning moves
         List<PlayerMove> losingMoves = new ArrayList<>();
         List<PlayerMove> otherMoves = new ArrayList<>();
-        
+        List<PlayerMove> winningMoves = new ArrayList<>();
+
         for (PlayerMove playerMove : startingMoves) {
             Board vBoard4 = new Board(board);
             try {
@@ -43,26 +44,29 @@ public class Cpu4 extends Cpu3 {
             }
 
             List<PlayerMove> opponentMoves = super.getPlayerMoves(playerPiece.opponent(), vBoard4);
-            if (opponentMoves.get(0).isWinningMove()) {
+            if (opponentMoves.get(0).getMoveType() == MoveType.winning) {
                 losingMoves.add(playerMove);
+            } else if (opponentMoves.get(0).getMoveType() == MoveType.losing) {
+                winningMoves.add(playerMove);
             } else {
                 otherMoves.add(playerMove);
             }
         }
 
+        if (!winningMoves.isEmpty()) {
+            board.println("Player " + playerPiece.getMark() + " has a winning move");
+            return winningMoves;
+        }
+
         if (otherMoves.isEmpty()) {
-            if (!board.isInvisible()) {
-                System.out.println("Player " + playerPiece.getMark() + " forced to make a losing move");
-            }
+            board.println("Player " + playerPiece.getMark() + " forced to make a losing move");
             return losingMoves;
         }
-        
+
         if (!losingMoves.isEmpty()) {
-            if (!board.isInvisible()) {
-                System.out.println("Player " + playerPiece.getMark() + " is avoiding " + losingMoves.size() + " losing moves");
-            }
+            board.println("Player " + playerPiece.getMark() + " is avoiding " + losingMoves.size() + " losing moves");
         }
-        
+
         return otherMoves;
     }
 }

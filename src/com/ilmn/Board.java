@@ -138,4 +138,9 @@ public class Board {
         return true;
     }
 
+    public void println(String str) {
+        if (!isInvisible()) {
+            System.out.println(str);
+        }
+    }
 }
