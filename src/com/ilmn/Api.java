@@ -2,6 +2,7 @@ package com.ilmn;
 
 import java.net.URI;
 
+import javax.json.JsonObject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -11,35 +12,37 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.glassfish.jersey.client.ClientConfig;
 
+import com.ilmn.Pojos.GameList;
+
 public class Api {
 
     String baseUrl =  "http://10.46.36.105:8080";
 
+    public void run() {
+        getGames();
+    }
+    
     public void getGames() {
         ClientConfig config = new ClientConfig();
         Client client = ClientBuilder.newClient(config);
         WebTarget target = client.target(getBaseURI());
-        String response = target.path("rest").
-                path("hello").
+        String response = target.path("games").
                 request().
                 accept(MediaType.TEXT_PLAIN).
                 get(Response.class)
                 .toString();
 
-        String plainAnswer =
-                target.path("rest").path("hello").request().accept(MediaType.TEXT_PLAIN).get(String.class);
-        String xmlAnswer =
-                target.path("rest").path("hello").request().accept(MediaType.TEXT_XML).get(String.class);
-        String htmlAnswer=
-                target.path("rest").path("hello").request().accept(MediaType.TEXT_HTML).get(String.class);
+        JsonObject jsonAnswer = target.path("games").request().accept(MediaType.APPLICATION_JSON).get(JsonObject.class);
 
-        System.out.println(response);
-        System.out.println(plainAnswer);
-        System.out.println(xmlAnswer);
-        System.out.println(htmlAnswer);
+        GameList gameList = GameList.deserialize(jsonAnswer);
     }
 
-    private static URI getBaseURI() {
-        return UriBuilder.fromUri("http://localhost:8080/com.vogella.jersey.first").build();
+    private URI getBaseURI() {
+        return UriBuilder.fromUri(baseUrl).build();
     }
 }
+
+//    JsonObject myObject = Json.createObjectBuilder()
+//            .add("name", "Agamemnon")
+//            .add("age", 32)
+//            .build();

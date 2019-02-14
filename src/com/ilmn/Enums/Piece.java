@@ -1,5 +1,7 @@
 package com.ilmn.Enums;
 
+import org.omg.CosNaming.NamingContextPackage.NotFound;
+
 public enum Piece {
     PlayerX ("X"),
     PlayerO ("0"),
@@ -23,5 +25,14 @@ public enum Piece {
         } else {
             return this;
         }
+    }
+
+    public static Piece fromMark(String mark) {
+        for (Piece piece : Piece.values()) {
+            if (piece.getMark().equals(mark)) {
+                return piece;
+            }
+        }
+        return Empty;
     }
 }

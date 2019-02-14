@@ -7,11 +7,7 @@ public class Main {
     public static void main(String[] args) {
 
         Api api = new Api();
-        try {
-            api.getGames();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }        
+        api.run();
         
 //        Board board = new Board();
 //        board.show();
