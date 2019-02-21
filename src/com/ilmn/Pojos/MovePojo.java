@@ -5,12 +5,12 @@ import javax.json.JsonObject;
 import com.ilmn.Enums.Direction;
 import com.ilmn.Enums.Position;
 
-public class Move {
+public class MovePojo {
     private Direction neutronDirn;
     private Position piece;
     private Direction pieceDirn;
 
-    public Move() {
+    public MovePojo() {
     }
 
     public Direction getNeutronDirn() {
@@ -37,11 +37,20 @@ public class Move {
         this.pieceDirn = pieceDirn;
     }
 
-    public static Move deserialize(JsonObject jsonMove) {
-        Move move = new Move();
-        move.setNeutronDirn(Direction.valueOf(jsonMove.getString("neutrondirn")));
-        move.setPiece(new Position(jsonMove.getString("piece")));
-        move.setPieceDirn(Direction.valueOf(jsonMove.getString("piecedirn")));
-        return move;
+    public static MovePojo deserialize(JsonObject jsonMove) {
+        MovePojo movePojo = new MovePojo();
+        movePojo.setNeutronDirn(Direction.valueOf(jsonMove.getString("neutrondirn")));
+        movePojo.setPiece(new Position(jsonMove.getString("piece")));
+        movePojo.setPieceDirn(Direction.valueOf(jsonMove.getString("piecedirn")));
+        return movePojo;
+    }
+
+    @Override
+    public String toString() {
+        return "\nMovePojo{" +
+                "neutronDirn=" + neutronDirn +
+                ", piece=" + piece +
+                ", pieceDirn=" + pieceDirn +
+                "}";
     }
 }
