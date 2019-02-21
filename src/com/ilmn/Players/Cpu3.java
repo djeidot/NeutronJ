@@ -17,12 +17,13 @@ public class Cpu3 extends Cpu2 {
         losing,
         other
     }
-    
+
     protected class PlayerMove {
-        
+
         private Direction neutronMove;
         private Pair<Position, Direction> pieceMove;
         private MoveType moveType;
+        private int neutronMovesAfter;
 
         public PlayerMove(Direction neutronMove, Pair<Position, Direction> pieceMove, MoveType moveType) {
             this.neutronMove = neutronMove;
@@ -44,8 +45,20 @@ public class Cpu3 extends Cpu2 {
             return pieceMove;
         }
 
+        public void setMoveType(MoveType moveType) {
+            this.moveType = moveType;
+        }
+
         public MoveType getMoveType() {
             return moveType;
+        }
+
+        public void setNeutronMovesAfter(int neutronMovesAfter) {
+            this.neutronMovesAfter = neutronMovesAfter;
+        }
+
+        public int getNeutronMovesAfter() {
+            return this.neutronMovesAfter;
         }
     }
 
@@ -71,6 +84,7 @@ public class Cpu3 extends Cpu2 {
         // Returns a list of possible moves
         // If there is a list of winning moves only that list is returned
         // Otherwise it returns a list of normal moves
+        // Losing moves are avoided unless there is no other choice
 
         List<Direction> neutronMoves = getPossibleMoves(board.getNeutron(), board);
         List<PlayerMove> winningNeutronMoves = new ArrayList<>();
@@ -89,6 +103,7 @@ public class Cpu3 extends Cpu2 {
             board.println("Player " + playerPiece.getMark() + " has a winning move");
             return winningNeutronMoves;
         } else if (otherNeutronMoves.isEmpty()) {
+            board.println("Player " + playerPiece.getMark() + " forced to make a losing move");
             return losingNeutronMoves;
         }
 

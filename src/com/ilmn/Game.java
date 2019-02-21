@@ -5,6 +5,7 @@ import com.ilmn.Players.Cpu1;
 import com.ilmn.Players.Cpu2;
 import com.ilmn.Players.Cpu3;
 import com.ilmn.Players.Cpu4;
+import com.ilmn.Players.Cpu5;
 import com.ilmn.Players.Human;
 import com.ilmn.Players.Player;
 
@@ -16,8 +17,8 @@ public class Game {
 
     public Game(Board board) {
         this.board = board;
-        this.player0 = new Cpu4(Piece.PlayerO, board);
-        this.playerX = new Cpu4(Piece.PlayerX, board);
+        this.player0 = new Cpu5(Piece.PlayerO, board);
+        this.playerX = new Cpu5(Piece.PlayerX, board);
         loop();
     }
 

@@ -20,7 +20,7 @@ public class Cpu4 extends Cpu3 {
         // Returns a list of possible moves
         // If there is a list of winning moves only that list is returned
         // Otherwise it returns a list of normal moves
-        // Normal moves are differentiated from losing moves so that losing moves are avoided
+        // Losing moves are avoided unless there is no other choice
 
         // Winning and other moves are gotten from the Cpu3 version of this method so we can call it now
         List<PlayerMove> startingMoves = super.getPlayerMoves(playerPiece, board);
@@ -45,10 +45,13 @@ public class Cpu4 extends Cpu3 {
 
             List<PlayerMove> opponentMoves = super.getPlayerMoves(playerPiece.opponent(), vBoard4);
             if (opponentMoves.get(0).getMoveType() == MoveType.winning) {
+                playerMove.setMoveType(MoveType.losing);
                 losingMoves.add(playerMove);
             } else if (opponentMoves.get(0).getMoveType() == MoveType.losing) {
+                playerMove.setMoveType(MoveType.winning);
                 winningMoves.add(playerMove);
             } else {
+                playerMove.setMoveType(MoveType.other);
                 otherMoves.add(playerMove);
             }
         }
