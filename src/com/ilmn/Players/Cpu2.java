@@ -14,8 +14,8 @@ import javafx.util.Pair;
 // However it treats neutron and piece moves separately.
 public class Cpu2 extends Cpu1 {
 
-    public Cpu2(Piece playerPiece, Board board) {
-        super(playerPiece, board);
+    public Cpu2(String name, Piece playerPiece, Board board) {
+        super(name, playerPiece, board);
     }
 
     @Override

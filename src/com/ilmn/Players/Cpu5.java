@@ -11,8 +11,8 @@ public class Cpu5 extends Cpu4 {
 
     // In addition to the other cpus, Cpu5 will choose the normal move that traps the
     // neutron the most
-    public Cpu5(Piece playerPiece, Board board) {
-        super(playerPiece, board);
+    public Cpu5(String name, Piece playerPiece, Board board) {
+        super(name, playerPiece, board);
     }
 
     @Override

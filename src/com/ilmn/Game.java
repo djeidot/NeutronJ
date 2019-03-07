@@ -17,8 +17,8 @@ public class Game {
 
     public Game(Board board) {
         this.board = board;
-        this.player0 = new Cpu5(Piece.PlayerO, board);
-        this.playerX = new Cpu5(Piece.PlayerX, board);
+        this.player0 = new Cpu5("Cpu5O", Piece.PlayerO, board);
+        this.playerX = new Cpu5("Cpu5X", Piece.PlayerX, board);
         loop();
     }
 

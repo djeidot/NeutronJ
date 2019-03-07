@@ -16,8 +16,8 @@ public class Cpu1 extends Player {
 
     private Random random;
 
-    public Cpu1(Piece playerPiece, Board board) {
-        super(playerPiece, board);
+    public Cpu1(String name, Piece playerPiece, Board board) {
+        super(name, playerPiece, board);
         random = new Random();
     }
 

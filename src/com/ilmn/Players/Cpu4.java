@@ -11,8 +11,8 @@ public class Cpu4 extends Cpu3 {
 
     // Cpu4 will try to anticipate winning moves by the opponent player so that it can identify
     // and avoid losing moves by the current player
-    public Cpu4(Piece playerPiece, Board board) {
-        super(playerPiece, board);
+    public Cpu4(String name, Piece playerPiece, Board board) {
+        super(name, playerPiece, board);
     }
 
     @Override

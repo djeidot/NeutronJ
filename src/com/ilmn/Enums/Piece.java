@@ -35,4 +35,8 @@ public enum Piece {
         }
         return Empty;
     }
+    
+    public boolean isPlayer() {
+        return this.equals(PlayerO) || this.equals(PlayerX);
+    }
 }

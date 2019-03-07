@@ -12,8 +12,8 @@ public class Human extends Player {
 
     private Scanner scanner;
 
-    public Human(Piece player, Board board) {
-        super(player, board);
+    public Human(String name, Piece player, Board board) {
+        super(name, player, board);
         this.scanner = new Scanner(System.in);
     }
 

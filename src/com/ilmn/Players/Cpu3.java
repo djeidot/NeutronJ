@@ -65,8 +65,8 @@ public class Cpu3 extends Cpu2 {
     PlayerMove playerMove;
 
     // Cpu3 considers both neutron and player piece moves to determine if there is a winning outcome
-    public Cpu3(Piece playerPiece, Board board) {
-        super(playerPiece, board);
+    public Cpu3(String name, Piece playerPiece, Board board) {
+        super(name, playerPiece, board);
     }
 
     @Override
