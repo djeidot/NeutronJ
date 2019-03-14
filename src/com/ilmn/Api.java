@@ -1,6 +1,13 @@
 package com.ilmn;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 
 import javax.json.JsonObject;
 import javax.ws.rs.client.Client;
@@ -12,6 +19,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.HttpUrlConnectorProvider;
 
 import com.ilmn.Enums.Direction;
 import com.ilmn.Enums.Position;
@@ -23,45 +31,48 @@ import com.ilmn.Pojos.PlayerPojo;
 
 public class Api {
 
-    String baseUrl =  "http://10.46.36.105:8080";
+    String baseUrl = "http://10.46.36.105:8080";
+
     private URI getBaseURI() {
         return UriBuilder.fromUri(baseUrl).build();
     }
+
     private WebTarget target;
 
     public Api() {
         ClientConfig config = new ClientConfig();
-        Client client = ClientBuilder.newClient(config);
+        Client client = ClientBuilder.newClient(config)
+                .property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true);
         target = client.target(getBaseURI());
     }
 
     public void run() {
-//        PlayerPojo player = getPlayer("Neil");
+//        PlayerPojo player = getPlayer("Joao2");
 //        System.out.println(player.toString());
 //        
 //        GamesPojo games = getGames();
 //        System.out.println(games.toString());
 
-//        GamePojo game = getGame("140359470144144");
+//        GamePojo game = getGame("140587437522224");
 //        System.out.println(game.toString());
 //        
 //        GameStartPojo gameStartPojo = new GameStartPojo("Joao1", "Joao2", "O");
 //        startGame(gameStartPojo);
 
         PlayerMovePojo playerMovePojo = new PlayerMovePojo(Direction.N, new Position("E3"), Direction.N);
-        movePiece("140359470144144", playerMovePojo);
+        movePiece("140587437522224", playerMovePojo);
     }
-    
+
     public GamesPojo getGames() {
         JsonObject jsonAnswer = target.path("games/").request().accept(MediaType.APPLICATION_JSON).get(JsonObject.class);
         return GamesPojo.deserialize(jsonAnswer);
     }
-    
+
     public GamePojo getGame(String gameId) {
         JsonObject jsonAnswer = target.path("games/").path(gameId + "/").request().accept(MediaType.APPLICATION_JSON).get(JsonObject.class);
         return GamePojo.deserialize(gameId, jsonAnswer);
     }
-    
+
     public PlayerPojo getPlayer(String playerName) {
         JsonObject jsonAnswer = target.path("players/").path(playerName).request().accept(MediaType.APPLICATION_JSON).get(JsonObject.class);
         return PlayerPojo.deserialize(jsonAnswer);
@@ -75,8 +86,48 @@ public class Api {
 
     public boolean movePiece(String gameId, PlayerMovePojo playerMovePojo) {
         JsonObject jsonRequest = playerMovePojo.serialize();
-        Response response = target.path("games/").path(gameId + "/").request().post(Entity.json(jsonRequest));
-        return response.getStatus() == 204;
+        
+        // Try https://stackoverflow.com/a/46323891/4880 next time
+
+//        Response response = target.path("games/").path(gameId + "/").request().property("X-HTTP-Method-Override", "PATCH").post(Entity.json(jsonRequest));
+//        return response.getStatus() == 204;
+
+        try {
+            URL url = new URL(baseUrl + "/games/" + gameId + "/");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setDoOutput(true);
+            conn.setRequestProperty("X-HTTP-Method-Override", "PATCH");
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json");
+
+            String input = jsonRequest.toString();
+
+            OutputStream os = conn.getOutputStream();
+            os.write(input.getBytes());
+            os.flush();
+
+            if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + conn.getResponseCode() + " " + conn.getResponseMessage());
+            }
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(
+                    (conn.getInputStream())));
+
+            String output;
+            System.out.println("Output from Server .... \n");
+            while ((output = br.readLine()) != null) {
+                System.out.println(output);
+            }
+
+            conn.disconnect();
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 }
 
