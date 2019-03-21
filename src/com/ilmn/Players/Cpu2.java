@@ -49,7 +49,7 @@ public class Cpu2 extends Cpu1 {
     protected boolean canMoveNeutronToPlayersBackline(Board board, Piece playerPiece, Direction move) {
         Board vBoard2 = new Board(board);
         try {
-            vBoard2.move(vBoard2.getNeutron(), Piece.Neutron, move);
+            vBoard2.move(this, vBoard2.getNeutron(), Piece.Neutron, move);
         } catch (InvalidMoveException e) {
             System.out.println("Cpu2 made a wrong move - " + e.getMessage());
         }
@@ -84,7 +84,7 @@ public class Cpu2 extends Cpu1 {
     protected boolean canTrapNeutron(Position pos, Direction move, Piece playerPiece, Board board) {
         Board vBoard2 = new Board(board);
         try {
-            vBoard2.move(pos, playerPiece, move);
+            vBoard2.move(this, pos, playerPiece, move);
         } catch (InvalidMoveException e) {
             System.out.println("Cpu2 made a wrong move - " + e.getMessage());
         }

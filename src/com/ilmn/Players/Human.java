@@ -24,7 +24,7 @@ public class Human extends Player {
 
         try {
             Direction dir = Direction.valueOf(input);
-            board.move(board.getNeutron(), Piece.Neutron, dir);
+            board.move(this, board.getNeutron(), Piece.Neutron, dir);
 
 
         } catch (IllegalArgumentException ex) {
@@ -44,7 +44,7 @@ public class Human extends Player {
         try {
             Position pos = new Position(input.substring(0, 2));
             Direction dir = Direction.valueOf(input.substring(2).trim());
-            board.move(pos, playerPiece, dir);
+            board.move(this, pos, playerPiece, dir);
 
 
         } catch (EnumConstantNotPresentException ex) {

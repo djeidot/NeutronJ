@@ -9,6 +9,7 @@ public abstract class Player {
     Board board;
 
     public Player(String name, Piece playerPiece, Board board) {
+        this.name = name;
         this.playerPiece = playerPiece;
         this.board = board;
     }

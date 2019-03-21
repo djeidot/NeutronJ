@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ilmn.Board;
+import com.ilmn.Enums.MoveType;
 import com.ilmn.Enums.Piece;
 import com.ilmn.Exceptions.InvalidMoveException;
+import com.ilmn.PlayerMove;
 
 public class Cpu4 extends Cpu3 {
 
@@ -37,8 +39,8 @@ public class Cpu4 extends Cpu3 {
         for (PlayerMove playerMove : startingMoves) {
             Board vBoard4 = new Board(board);
             try {
-                vBoard4.move(vBoard4.getNeutron(), Piece.Neutron, playerMove.getNeutronMove());
-                vBoard4.move(playerMove.getPieceMove().getKey(), playerPiece, playerMove.getPieceMove().getValue());
+                vBoard4.move(this, vBoard4.getNeutron(), Piece.Neutron, playerMove.getNeutronMove());
+                vBoard4.move(this, playerMove.getPieceMove().getKey(), playerPiece, playerMove.getPieceMove().getValue());
             } catch (InvalidMoveException e) {
                 System.out.println("Cpu4 made a wrong move - " + e.getMessage());
             }

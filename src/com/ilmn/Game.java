@@ -1,12 +1,7 @@
 package com.ilmn;
 
 import com.ilmn.Enums.Piece;
-import com.ilmn.Players.Cpu1;
-import com.ilmn.Players.Cpu2;
-import com.ilmn.Players.Cpu3;
-import com.ilmn.Players.Cpu4;
 import com.ilmn.Players.Cpu5;
-import com.ilmn.Players.Human;
 import com.ilmn.Players.Player;
 
 public class Game {
@@ -19,6 +14,8 @@ public class Game {
         this.board = board;
         this.player0 = new Cpu5("Cpu5O", Piece.PlayerO, board);
         this.playerX = new Cpu5("Cpu5X", Piece.PlayerX, board);
+        board.setPlayers(this.player0, this.playerX);
+        board.show();
         loop();
     }
 
@@ -29,20 +26,25 @@ public class Game {
         while (!gameEnd) {
 
             System.out.println("Round " + round);
-            gameEnd = PlayerMove(player0)
-                    || PlayerMove(playerX);
+            gameEnd = playerTurn(player0)
+                    || playerTurn(playerX);
             round++;
         }
         System.out.println("Game Over");
     }
 
-    private boolean PlayerMove(Player player) {
+    private boolean playerTurn(Player player) {
 
         player.MoveNeutron();
         if (checkNeutronInBackLine()) {
             return true;
         }
         player.MovePlayerPiece();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return CheckNeutronBlocked(player.getPlayerPiece());
     }
 

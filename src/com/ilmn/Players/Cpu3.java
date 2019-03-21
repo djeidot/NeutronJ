@@ -5,62 +5,14 @@ import java.util.List;
 
 import com.ilmn.Board;
 import com.ilmn.Enums.Direction;
+import com.ilmn.Enums.MoveType;
 import com.ilmn.Enums.Piece;
 import com.ilmn.Enums.Position;
 import com.ilmn.Exceptions.InvalidMoveException;
+import com.ilmn.PlayerMove;
 import javafx.util.Pair;
 
 public class Cpu3 extends Cpu2 {
-
-    public enum MoveType {
-        winning,
-        losing,
-        other
-    }
-
-    protected class PlayerMove {
-
-        private Direction neutronMove;
-        private Pair<Position, Direction> pieceMove;
-        private MoveType moveType;
-        private int neutronMovesAfter;
-
-        public PlayerMove(Direction neutronMove, Pair<Position, Direction> pieceMove, MoveType moveType) {
-            this.neutronMove = neutronMove;
-            this.pieceMove = pieceMove;
-            this.moveType = moveType;
-        }
-
-        public PlayerMove(Direction neutronMove, Position piecePosition, Direction pieceDirection, MoveType moveType) {
-            this.neutronMove = neutronMove;
-            this.pieceMove = new Pair<>(piecePosition, pieceDirection);
-            this.moveType = moveType;
-        }
-
-        public Direction getNeutronMove() {
-            return neutronMove;
-        }
-
-        public Pair<Position, Direction> getPieceMove() {
-            return pieceMove;
-        }
-
-        public void setMoveType(MoveType moveType) {
-            this.moveType = moveType;
-        }
-
-        public MoveType getMoveType() {
-            return moveType;
-        }
-
-        public void setNeutronMovesAfter(int neutronMovesAfter) {
-            this.neutronMovesAfter = neutronMovesAfter;
-        }
-
-        public int getNeutronMovesAfter() {
-            return this.neutronMovesAfter;
-        }
-    }
 
     PlayerMove playerMove;
 
@@ -92,11 +44,11 @@ public class Cpu3 extends Cpu2 {
         List<PlayerMove> otherNeutronMoves = new ArrayList<>();
         for (Direction move : neutronMoves) {
             if (canMoveNeutronToPlayersBackline(board, playerPiece.opponent(), move)) {
-                winningNeutronMoves.add(new PlayerMove(move, null, MoveType.winning));
+                winningNeutronMoves.add(new PlayerMove(this, move, null, MoveType.winning));
             } else if (canMoveNeutronToPlayersBackline(board, playerPiece, move)) {
-                losingNeutronMoves.add(new PlayerMove(move, null, MoveType.losing));
+                losingNeutronMoves.add(new PlayerMove(this, move, null, MoveType.losing));
             } else {
-                otherNeutronMoves.add(new PlayerMove(move, null, MoveType.other));
+                otherNeutronMoves.add(new PlayerMove(this, move, null, MoveType.other));
             }
         }
         if (!winningNeutronMoves.isEmpty()) {
@@ -112,7 +64,7 @@ public class Cpu3 extends Cpu2 {
         for (PlayerMove neutronMove : otherNeutronMoves) {
             Board vBoard3 = new Board(board);
             try {
-                vBoard3.move(vBoard3.getNeutron(), Piece.Neutron, neutronMove.getNeutronMove());
+                vBoard3.move(this, vBoard3.getNeutron(), Piece.Neutron, neutronMove.getNeutronMove());
             } catch (InvalidMoveException e) {
                 System.out.println("Cpu3 made a wrong move - " + e.getMessage());
             }
@@ -122,9 +74,9 @@ public class Cpu3 extends Cpu2 {
                 List<Direction> moves = getPossibleMoves(pos, vBoard3);
                 for (Direction move : moves) {
                     if (canTrapNeutron(pos, move, playerPiece, vBoard3)) {
-                        winningPieceMoves.add(new PlayerMove(neutronMove.getNeutronMove(), pos, move, MoveType.winning));
+                        winningPieceMoves.add(new PlayerMove(this, neutronMove.getNeutronMove(), pos, move, MoveType.winning));
                     } else {
-                        otherPieceMoves.add(new PlayerMove(neutronMove.getNeutronMove(), pos, move, MoveType.other));
+                        otherPieceMoves.add(new PlayerMove(this, neutronMove.getNeutronMove(), pos, move, MoveType.other));
                     }
                 }
             }

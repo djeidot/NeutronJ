@@ -4,15 +4,18 @@ import com.ilmn.Enums.Direction;
 import com.ilmn.Enums.Piece;
 import com.ilmn.Enums.Position;
 import com.ilmn.Exceptions.InvalidMoveException;
+import com.ilmn.Players.Player;
 
 public class Board {
 
     private Piece[][] board = new Piece[5][5];
+    private MoveList moveList;
 
     private boolean invisible = false;
 
     public Board() {
         initBoard();
+        moveList = new MoveList();
     }
 
     public Board(Board other) {
@@ -22,10 +25,6 @@ public class Board {
             }
         }
         invisible = true;
-    }
-
-    public boolean isInvisible() {
-        return invisible;
     }
 
     private Piece pieceAt(Position position) {
@@ -55,8 +54,8 @@ public class Board {
 
         if (invisible) return;
 
-        System.out.println("       1 2 3 4 5");
-        System.out.println("      +---------+");
+        System.out.println("       1 2 3 4 5 " + moveList.getHeaders());
+        System.out.println("      +---------+" + moveList.getSeparator());
         for (int y = 0; y < 5; y++) {
             System.out.print("    " + (char) ('A' + y) + " |");
             for (int x = 0; x < 5; x++) {
@@ -65,9 +64,12 @@ public class Board {
                     System.out.print(" ");
                 }
             }
-            System.out.print("|\n");
+            System.out.print("|" + moveList.getMoveString(y) + "\n");
         }
-        System.out.print("      +---------+\n\n");
+        System.out.println("      +---------+" + moveList.getMoveString(6));
+        for (int i = 7; i < moveList.getMoveLineCount(); i++) {
+            System.out.println("                 " + moveList.getMoveString(i));
+        }
     }
 
     public boolean hasPiece(Position pos, Piece pieceType) {
@@ -89,7 +91,7 @@ public class Board {
         return posEnd;
     }
 
-    public void move(Position pos, Piece piece, Direction dir) throws InvalidMoveException {
+    public void move(Player player, Position pos, Piece piece, Direction dir) throws InvalidMoveException {
         if (!hasPiece(pos, piece)) {
             if (pieceAt(pos) == Piece.Empty) {
                 throw new InvalidMoveException("No piece in " + pos.toString() + " to move.");
@@ -100,9 +102,11 @@ public class Board {
             throw new InvalidMoveException("Can't move piece " + pos.toString() + " in direction " + dir.toString());
         } else {
             moveInternal(pos, dir);
+            if (!invisible) {
+                moveList.addMove(player, piece, pos, dir);
+                show();
+            }
         }
-
-        show();
     }
 
     public Position getNeutron() {
@@ -139,8 +143,12 @@ public class Board {
     }
 
     public void println(String str) {
-        if (!isInvisible()) {
+        if (!invisible) {
             System.out.println(str);
         }
+    }
+
+    public void setPlayers(Player player0, Player playerX) {
+        moveList.setPlayers(player0, playerX);
     }
 }
