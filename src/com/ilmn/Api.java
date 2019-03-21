@@ -4,10 +4,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import javax.json.JsonObject;
 import javax.ws.rs.client.Client;
@@ -31,7 +36,7 @@ import com.ilmn.Pojos.PlayerPojo;
 
 public class Api {
 
-    String baseUrl = "http://10.46.36.105:8080";
+    String baseUrl = "http://10.44.37.98:8080";
 
     private URI getBaseURI() {
         return UriBuilder.fromUri(baseUrl).build();
@@ -44,6 +49,8 @@ public class Api {
         Client client = ClientBuilder.newClient(config)
                 .property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true);
         target = client.target(getBaseURI());
+
+        allowMethods("PATCH");
     }
 
     public void run() {
@@ -53,14 +60,14 @@ public class Api {
 //        GamesPojo games = getGames();
 //        System.out.println(games.toString());
 
-//        GamePojo game = getGame("140587437522224");
+//        GamePojo game = getGame("139635621083232");
 //        System.out.println(game.toString());
 //        
 //        GameStartPojo gameStartPojo = new GameStartPojo("Joao1", "Joao2", "O");
 //        startGame(gameStartPojo);
 
         PlayerMovePojo playerMovePojo = new PlayerMovePojo(Direction.N, new Position("E3"), Direction.N);
-        movePiece("140587437522224", playerMovePojo);
+        movePiece("139635621083232", playerMovePojo);
     }
 
     public GamesPojo getGames() {
@@ -97,7 +104,7 @@ public class Api {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
             conn.setRequestProperty("X-HTTP-Method-Override", "PATCH");
-            conn.setRequestMethod("POST");
+            conn.setRequestMethod("PATCH");
             conn.setRequestProperty("Content-Type", "application/json");
 
             String input = jsonRequest.toString();
@@ -129,6 +136,27 @@ public class Api {
         }
         return true;
     }
+
+    private static void allowMethods(String... methods) {
+        try {
+            Field methodsField = HttpURLConnection.class.getDeclaredField("methods");
+
+            Field modifiersField = Field.class.getDeclaredField("modifiers");
+            modifiersField.setAccessible(true);
+            modifiersField.setInt(methodsField, methodsField.getModifiers() & ~Modifier.FINAL);
+
+            methodsField.setAccessible(true);
+
+            String[] oldMethods = (String[]) methodsField.get(null);
+            Set<String> methodsSet = new LinkedHashSet<>(Arrays.asList(oldMethods));
+            methodsSet.addAll(Arrays.asList(methods));
+            String[] newMethods = methodsSet.toArray(new String[0]);
+
+            methodsField.set(null/*static field*/, newMethods);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new IllegalStateException(e);
+        }
+    }    
 }
 
 //    JsonObject myObject = Json.createObjectBuilder()
