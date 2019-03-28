@@ -25,4 +25,9 @@ public class PlayerMovePojo {
                 .build();
         return playerMoveObj;
     }
+
+    @Override
+    public String toString() {
+        return "'" + neutronDir + ", " + playerPiece + " " + pieceDir + "'";
+    }
 }

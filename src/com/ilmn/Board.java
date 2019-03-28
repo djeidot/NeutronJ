@@ -10,6 +10,7 @@ public class Board {
 
     private Piece[][] board = new Piece[5][5];
     private MoveList moveList;
+    private Game game;
 
     private boolean invisible = false;
 
@@ -17,7 +18,7 @@ public class Board {
         initBoard();
         moveList = new MoveList();
     }
-
+    
     public Board(Board other) {
         for (int x = 0; x < 5; x++) {
             for (int y = 0; y < 5; y++) {
@@ -150,5 +151,9 @@ public class Board {
 
     public void setPlayers(Player player0, Player playerX) {
         moveList.setPlayers(player0, playerX);
+    }
+
+    public void setApiGame(Api api, String gameId) {
+        moveList.setApiGame(api, gameId);
     }
 }

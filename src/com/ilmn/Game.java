@@ -3,19 +3,24 @@ package com.ilmn;
 import com.ilmn.Enums.Piece;
 import com.ilmn.Players.Cpu5;
 import com.ilmn.Players.Player;
+import com.ilmn.Pojos.GameStartPojo;
 
 public class Game {
 
     private Board board;
-    private Player player0;
+    private Player playerO;
     private Player playerX;
+    private Api api;
+    private String gameId;
 
-    public Game(Board board) {
-        this.board = board;
-        this.player0 = new Cpu5("Cpu5O", Piece.PlayerO, board);
+    public Game(Api api) {
+        this.board = new Board();
+        this.api = api;
+        this.playerO = new Cpu5("Cpu5O", Piece.PlayerO, board);
         this.playerX = new Cpu5("Cpu5X", Piece.PlayerX, board);
-        board.setPlayers(this.player0, this.playerX);
+        board.setPlayers(this.playerO, this.playerX);
         board.show();
+        setupRemoteGame();
         loop();
     }
 
@@ -26,7 +31,7 @@ public class Game {
         while (!gameEnd) {
 
             System.out.println("Round " + round);
-            gameEnd = playerTurn(player0)
+            gameEnd = playerTurn(playerO)
                     || playerTurn(playerX);
             round++;
         }
@@ -71,5 +76,11 @@ public class Game {
             return true;
         }
         return false;
+    }
+    
+    private void setupRemoteGame() {
+        GameStartPojo gameStartPojo = new GameStartPojo(playerO.getName(), playerX.getName(), Piece.PlayerO.getMark());
+        gameId = api.startGame(gameStartPojo);
+        board.setApiGame(api, gameId);
     }
 }

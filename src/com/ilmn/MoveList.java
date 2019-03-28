@@ -7,12 +7,16 @@ import com.ilmn.Enums.Direction;
 import com.ilmn.Enums.Piece;
 import com.ilmn.Enums.Position;
 import com.ilmn.Players.Player;
+import com.ilmn.Pojos.MovePojo;
+import com.ilmn.Pojos.PlayerMovePojo;
 import javafx.util.Pair;
 
 public class MoveList {
 
     private Player player1;
     private Player player2;
+    private Api api;
+    private String gameId;
 
     class MoveLine {
         PlayerMove player1Move;
@@ -28,6 +32,11 @@ public class MoveList {
         this.player2 = playerX;
     }
 
+    public void setApiGame(Api api, String gameId) {
+        this.api = api;
+        this.gameId = gameId;
+    }
+
     public void addMove(Player player, Piece piece, Position pos, Direction dir) {
         if (piece == Piece.Neutron) {
             PlayerMove move = new PlayerMove(player, dir);
@@ -35,6 +44,10 @@ public class MoveList {
         } else {
             PlayerMove move = getLastMove();
             move.setPieceMove(player, pos, dir);
+            if (api != null && gameId != null) {
+                PlayerMovePojo playerMovePojo = new PlayerMovePojo(move.getNeutronMove(), move.getPieceMove().getKey(), move.getPieceMove().getValue());
+                api.movePiece(gameId, playerMovePojo);
+            }
         }
     }
     

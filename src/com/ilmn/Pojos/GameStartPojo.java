@@ -24,18 +24,6 @@ public class GameStartPojo {
         move = startingPlayer;
     }
     
-    public String getPlayerO() {
-        return playerO;
-    }
-
-    public String getPlayerX() {
-        return playerX;
-    }
-
-    public String getMove() {
-        return move;
-    }
-    
     public JsonObject serialize() {
         JsonObject gameStartObj = Json.createObjectBuilder()
             .add("playerO", playerO)

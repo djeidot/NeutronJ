@@ -1,18 +1,6 @@
 package com.ilmn;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 import javax.json.JsonObject;
 import javax.ws.rs.client.Client;
@@ -28,9 +16,10 @@ import org.glassfish.jersey.client.HttpUrlConnectorProvider;
 
 import com.ilmn.Enums.Direction;
 import com.ilmn.Enums.Position;
+import com.ilmn.Exceptions.InvalidMoveException;
+import com.ilmn.Pojos.GamePojo;
 import com.ilmn.Pojos.GameStartPojo;
 import com.ilmn.Pojos.GamesPojo;
-import com.ilmn.Pojos.GamePojo;
 import com.ilmn.Pojos.PlayerMovePojo;
 import com.ilmn.Pojos.PlayerPojo;
 
@@ -49,8 +38,6 @@ public class Api {
         Client client = ClientBuilder.newClient(config)
                 .property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true);
         target = client.target(getBaseURI());
-
-        allowMethods("PATCH");
     }
 
     public void run() {
@@ -66,7 +53,10 @@ public class Api {
 //        GameStartPojo gameStartPojo = new GameStartPojo("Joao1", "Joao2", "O");
 //        startGame(gameStartPojo);
 
-        PlayerMovePojo playerMovePojo = new PlayerMovePojo(Direction.N, new Position("E3"), Direction.N);
+        GamePojo game = getGame("139635621083232");
+        System.out.println(game.toString());
+        
+        PlayerMovePojo playerMovePojo = new PlayerMovePojo(Direction.N, new Position("E1"), Direction.N);
         movePiece("139635621083232", playerMovePojo);
     }
 
@@ -91,75 +81,11 @@ public class Api {
         return response.readEntity(String.class);
     }
 
-    public boolean movePiece(String gameId, PlayerMovePojo playerMovePojo) {
+    public void movePiece(String gameId, PlayerMovePojo playerMovePojo) {
         JsonObject jsonRequest = playerMovePojo.serialize();
-        
-        // Try https://stackoverflow.com/a/46323891/4880 next time
-
-//        Response response = target.path("games/").path(gameId + "/").request().property("X-HTTP-Method-Override", "PATCH").post(Entity.json(jsonRequest));
-//        return response.getStatus() == 204;
-
-        try {
-            URL url = new URL(baseUrl + "/games/" + gameId + "/");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setDoOutput(true);
-            conn.setRequestProperty("X-HTTP-Method-Override", "PATCH");
-            conn.setRequestMethod("PATCH");
-            conn.setRequestProperty("Content-Type", "application/json");
-
-            String input = jsonRequest.toString();
-
-            OutputStream os = conn.getOutputStream();
-            os.write(input.getBytes());
-            os.flush();
-
-            if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + conn.getResponseCode() + " " + conn.getResponseMessage());
-            }
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(
-                    (conn.getInputStream())));
-
-            String output;
-            System.out.println("Output from Server .... \n");
-            while ((output = br.readLine()) != null) {
-                System.out.println(output);
-            }
-
-            conn.disconnect();
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        Response response = target.path("games/").path(gameId + "/").request().property("X-HTTP-Method-Override", "PATCH").method("PATCH", Entity.json(jsonRequest));
+        if (response.getStatus() != 204) {
+            throw new RuntimeException("Server rejected move " + playerMovePojo.toString() + "; return status code: " + response.getStatus());
         }
-        return true;
     }
-
-    private static void allowMethods(String... methods) {
-        try {
-            Field methodsField = HttpURLConnection.class.getDeclaredField("methods");
-
-            Field modifiersField = Field.class.getDeclaredField("modifiers");
-            modifiersField.setAccessible(true);
-            modifiersField.setInt(methodsField, methodsField.getModifiers() & ~Modifier.FINAL);
-
-            methodsField.setAccessible(true);
-
-            String[] oldMethods = (String[]) methodsField.get(null);
-            Set<String> methodsSet = new LinkedHashSet<>(Arrays.asList(oldMethods));
-            methodsSet.addAll(Arrays.asList(methods));
-            String[] newMethods = methodsSet.toArray(new String[0]);
-
-            methodsField.set(null/*static field*/, newMethods);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new IllegalStateException(e);
-        }
-    }    
 }
-
-//    JsonObject myObject = Json.createObjectBuilder()
-//            .add("name", "Agamemnon")
-//            .add("age", 32)
-//            .build();
