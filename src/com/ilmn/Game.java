@@ -1,8 +1,11 @@
 package com.ilmn;
 
+import java.util.Scanner;
+
 import com.ilmn.Enums.Piece;
 import com.ilmn.Players.Cpu5;
 import com.ilmn.Players.Player;
+import com.ilmn.Players.Remote;
 import com.ilmn.Pojos.GameStartPojo;
 
 public class Game {
@@ -12,18 +15,32 @@ public class Game {
     private Player playerX;
     private Api api;
     private String gameId;
+    private Scanner scanner;
 
     public Game(Api api) {
-        this.board = new Board();
+
         this.api = api;
-        this.playerO = new Cpu5("Cpu5O", Piece.PlayerO, board);
-        this.playerX = new Cpu5("Cpu5X", Piece.PlayerX, board);
+        this.scanner = new Scanner(System.in);
+//        System.out.print("Type S to start a new game or J to join a game: ");
+//        String input = scanner.nextLine();
+//        input = input.trim();
+//        if (input == "S" || input == "s") {
+            startNewGame();
+//        } else if (input == "J" || input == "j") {
+            //joinGame();
+//        }
+        loop();
+    }
+    
+    private void startNewGame() {
+        this.board = new Board();
+        playerO = new Remote("Challenger", Piece.PlayerO, board);
+        playerX = new Cpu5("Cpu5X", Piece.PlayerX, board);
         board.setPlayers(this.playerO, this.playerX);
         board.show();
         setupRemoteGame();
-        loop();
     }
-
+    
     private void loop() {
 
         boolean gameEnd = false;
@@ -82,5 +99,7 @@ public class Game {
         GameStartPojo gameStartPojo = new GameStartPojo(playerO.getName(), playerX.getName(), Piece.PlayerO.getMark());
         gameId = api.startGame(gameStartPojo);
         board.setApiGame(api, gameId);
+        playerO.setApiGame(api, gameId);
+        playerX.setApiGame(api, gameId);
     }
 }

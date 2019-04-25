@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ilmn.Enums.Direction;
+import com.ilmn.Enums.MoveType;
 import com.ilmn.Enums.Piece;
 import com.ilmn.Enums.Position;
 import com.ilmn.Players.Player;
+import com.ilmn.Players.Remote;
 import com.ilmn.Pojos.MovePojo;
 import com.ilmn.Pojos.PlayerMovePojo;
 import javafx.util.Pair;
@@ -37,14 +39,20 @@ public class MoveList {
         this.gameId = gameId;
     }
 
-    public void addMove(Player player, Piece piece, Position pos, Direction dir) {
+    public void addMove(Player player, Piece piece, Position pos, Direction dir, MoveType moveType) {
         if (piece == Piece.Neutron) {
-            PlayerMove move = new PlayerMove(player, dir);
+            PlayerMove move = new PlayerMove(player, dir, moveType);
             addToList(move);
+            if (moveType == MoveType.winning || moveType == MoveType.losing) {
+                if (api != null && gameId != null && !(player instanceof Remote)) {
+                    PlayerMovePojo playerMovePojo = new PlayerMovePojo(move.getNeutronMove(), null, null);
+                    api.movePiece(gameId, playerMovePojo);
+                }               
+            }
         } else {
             PlayerMove move = getLastMove();
-            move.setPieceMove(player, pos, dir);
-            if (api != null && gameId != null) {
+            move.setPieceMove(player, pos, dir, moveType);
+            if (api != null && gameId != null && !(player instanceof Remote)) {
                 PlayerMovePojo playerMovePojo = new PlayerMovePojo(move.getNeutronMove(), move.getPieceMove().getKey(), move.getPieceMove().getValue());
                 api.movePiece(gameId, playerMovePojo);
             }

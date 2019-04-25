@@ -78,14 +78,20 @@ public class Api {
     public String startGame(GameStartPojo gameStartPojo) {
         JsonObject jsonRequest = gameStartPojo.serialize();
         Response response = target.path("games/").request().post(Entity.json(jsonRequest));
-        return response.readEntity(String.class);
+        if (response.getStatus() != 200) {
+            throw new RuntimeException("Server rejected game start " + gameStartPojo.toString() 
+                    + "; return status: " + response.getStatus() + " - " + response.readEntity(String.class));
+        }
+        JsonObject jsonAnswer = response.readEntity(JsonObject.class);
+        return jsonAnswer.getString("id");
     }
 
     public void movePiece(String gameId, PlayerMovePojo playerMovePojo) {
         JsonObject jsonRequest = playerMovePojo.serialize();
         Response response = target.path("games/").path(gameId + "/").request().property("X-HTTP-Method-Override", "PATCH").method("PATCH", Entity.json(jsonRequest));
         if (response.getStatus() != 204) {
-            throw new RuntimeException("Server rejected move " + playerMovePojo.toString() + "; return status code: " + response.getStatus());
+            throw new RuntimeException("Server rejected move " + playerMovePojo.toString()
+                    + "; return status: " + response.getStatus() + " - " + response.readEntity(String.class));
         }
     }
 }

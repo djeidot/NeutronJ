@@ -1,10 +1,12 @@
 package com.ilmn;
 
 import com.ilmn.Enums.Direction;
+import com.ilmn.Enums.MoveType;
 import com.ilmn.Enums.Piece;
 import com.ilmn.Enums.Position;
 import com.ilmn.Exceptions.InvalidMoveException;
 import com.ilmn.Players.Player;
+import com.ilmn.Pojos.GamePojo;
 
 public class Board {
 
@@ -26,6 +28,10 @@ public class Board {
             }
         }
         invisible = true;
+    }
+
+    public Board(GamePojo pojo) {
+        
     }
 
     private Piece pieceAt(Position position) {
@@ -104,10 +110,20 @@ public class Board {
         } else {
             moveInternal(pos, dir);
             if (!invisible) {
-                moveList.addMove(player, piece, pos, dir);
+                moveList.addMove(player, piece, pos, dir, getLastMoveType(player));
                 show();
             }
         }
+    }
+
+    private MoveType getLastMoveType(Player player) {
+        MoveType moveType = MoveType.other;
+        if (getNeutronBackLine() == player.getPlayerPiece()) {
+            moveType = MoveType.losing;
+        } else if (getNeutronBackLine() == player.getPlayerPiece().opponent() || isNeutronBlocked()) {
+            moveType = MoveType.winning;
+        }
+        return moveType;
     }
 
     public Position getNeutron() {
@@ -155,5 +171,6 @@ public class Board {
 
     public void setApiGame(Api api, String gameId) {
         moveList.setApiGame(api, gameId);
+        System.out.println("Starting remote game " + gameId);
     }
 }

@@ -1,5 +1,6 @@
 package com.ilmn.Players;
 
+import com.ilmn.Api;
 import com.ilmn.Board;
 import com.ilmn.Enums.Piece;
 
@@ -24,4 +25,6 @@ public abstract class Player {
 
     public abstract void MoveNeutron();
     public abstract void MovePlayerPiece();
+
+    public void setApiGame(Api api, String gameId) {}
 }

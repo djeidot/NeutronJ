@@ -4,7 +4,7 @@ import org.omg.CosNaming.NamingContextPackage.NotFound;
 
 public enum Piece {
     PlayerX ("X"),
-    PlayerO ("0"),
+    PlayerO ("O"),
     Neutron ("*"),
     Empty (" ");
 

@@ -13,16 +13,23 @@ public class PlayerMovePojo {
 
     public PlayerMovePojo(Direction neutronDir, Position playerPiece, Direction pieceDir) {
         this.neutronDir = neutronDir.toString();
-        this.playerPiece = playerPiece.toString();
-        this.pieceDir = pieceDir.toString();
+        this.playerPiece = playerPiece == null ? null : playerPiece.toString();
+        this.pieceDir = pieceDir == null ? null : pieceDir.toString();
     }
     
     public JsonObject serialize() {
-        JsonObject playerMoveObj = Json.createObjectBuilder()
-                .add("neutrondirn", neutronDir)
-                .add("piece", playerPiece)
-                .add("piecedirn", pieceDir)
-                .build();
+        JsonObject playerMoveObj;
+        if (playerPiece == null || pieceDir == null) {
+            playerMoveObj = Json.createObjectBuilder()
+                    .add("neutrondirn", neutronDir)
+                    .build();
+        } else {
+            playerMoveObj = Json.createObjectBuilder()
+                    .add("neutrondirn", neutronDir)
+                    .add("piece", playerPiece)
+                    .add("piecedirn", pieceDir)
+                    .build();
+        }
         return playerMoveObj;
     }
 

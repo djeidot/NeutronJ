@@ -28,16 +28,17 @@ public class PlayerMove {
         this.moveType = moveType;
     }
 
-    public PlayerMove(Player player, Direction neutronMove) {
+    public PlayerMove(Player player, Direction neutronMove, MoveType moveType) {
         this.player = player;
         this.neutronMove = neutronMove;
         this.pieceMove = null;
-        this.moveType = null;
+        this.moveType = moveType;
     }
 
-    public void setPieceMove(Player player, Position piecePosition, Direction pieceDirection) {
+    public void setPieceMove(Player player, Position piecePosition, Direction pieceDirection, MoveType moveType) {
         assert (this.player == player);
         this.pieceMove = new Pair<>(piecePosition, pieceDirection);
+        this.moveType = moveType;
     }
 
     public Direction getNeutronMove() {
