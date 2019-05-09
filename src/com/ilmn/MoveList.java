@@ -9,6 +9,7 @@ import com.ilmn.Enums.Piece;
 import com.ilmn.Enums.Position;
 import com.ilmn.Players.Player;
 import com.ilmn.Players.Remote;
+import com.ilmn.Pojos.GamePojo;
 import com.ilmn.Pojos.PlayerMovePojo;
 
 import static com.ilmn.Format.center;
@@ -29,6 +30,13 @@ public class MoveList {
     
     private String spacer = "     ";
 
+    public MoveList() {
+    }
+    
+    public MoveList(GamePojo pojo) {
+        
+    }
+    
     public void setPlayers(Player player0, Player playerX) {
         this.player1 = player0;
         this.player2 = playerX;

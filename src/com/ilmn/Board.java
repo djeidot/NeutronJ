@@ -7,6 +7,7 @@ import com.ilmn.Enums.Position;
 import com.ilmn.Exceptions.InvalidMoveException;
 import com.ilmn.Players.Player;
 import com.ilmn.Pojos.GamePojo;
+import com.ilmn.Pojos.MovePojo;
 
 public class Board {
 
@@ -31,7 +32,12 @@ public class Board {
     }
 
     public Board(GamePojo pojo) {
-        
+        for (int x = 0; x < 5; x++) {
+            for (int y = 0; y < 5; y++) {
+                this.board[x][y] = Piece.fromMark(pojo.getBoard()[y].substring(x, x + 1));
+            }
+        }
+        moveList = new MoveList(pojo);
     }
 
     private Piece pieceAt(Position position) {

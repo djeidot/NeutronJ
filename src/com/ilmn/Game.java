@@ -8,6 +8,7 @@ import java.util.Set;
 
 import com.ilmn.Enums.Piece;
 import com.ilmn.Players.Cpu5;
+import com.ilmn.Players.Human;
 import com.ilmn.Players.Player;
 import com.ilmn.Players.Remote;
 import com.ilmn.Pojos.GamePojo;
@@ -29,43 +30,71 @@ public class Game {
 
         this.api = api;
         this.scanner = new Scanner(System.in);
-        System.out.print("Type S to start a new game or J to join a game: ");
-        String input = scanner.nextLine();
-        input = input.trim();
-        if (input.equals("S") || input.equals("s")) {
-            startNewGame();
-        } else if (input.equals("J") || input.equals("j")) {
-            joinGame();
+        boolean playerXStarts;
+        while (true) {
+            System.out.print("Type S to start a new game or J to join a game: ");
+            String input = scanner.nextLine();
+            input = input.trim();
+            if (input.equals("S") || input.equals("s")) {
+                playerXStarts = startNewGame();
+                break;
+            } else if (input.equals("J") || input.equals("j")) {
+                playerXStarts = joinGame();
+                break;
+            } else {
+                System.out.println("Game type not recognized. Please input S or J");
+            }
         }
-        loop();
+        loop(playerXStarts);
     }
-    
-    private void startNewGame() {
+
+    private boolean startNewGame() {
         this.board = new Board();
         playerO = new Cpu5("Cpu5", Piece.PlayerO, board);
         playerX = new Remote("Cpu5X", Piece.PlayerX, board);
         board.setPlayers(this.playerO, this.playerX);
         board.show();
-        setupRemoteGame();
+        setupRemoteGame(null);
+        return false;
     }
-    
-    private void startExistingGame(GamePojo gamePojo) {
+
+    private boolean startExistingGame(GamePojo gamePojo, String playerOClass, String playerXClass) {
         this.board = new Board(gamePojo);
-    //    playerO = 
+        playerO = setNewPlayer(gamePojo.getPlayerO(), playerOClass, Piece.PlayerO, board);
+        playerX = setNewPlayer(gamePojo.getPlayerX(), playerXClass, Piece.PlayerX, board);
+        board.setPlayers(playerO, playerX);
+        board.show();
+        setupRemoteGame(gamePojo.getId());
+        return gamePojo.getMove().equals(Piece.PlayerX);
     }
-    
-    private void joinGame() {
+
+    private Player setNewPlayer(String playerName, String playerClass, Piece playerPiece, Board board) {
+        switch (playerClass) {
+            case "H":
+                return new Human(playerName, playerPiece, board);
+            case "C":
+                return new Cpu5(playerName, playerPiece, board);
+            case "R":
+                return new Remote(playerName, playerPiece, board);
+            default:
+                throw new IndexOutOfBoundsException("Wrong player class");
+        }
+    }
+
+
+    private boolean joinGame() {
         GamesPojo gamesPojo = api.getGames();
         List<GamePojo> validGames = new ArrayList<>();
+        
         System.out.println("Here's a list of games to join:");
         System.out.println("Game ID         | Player O name | Player X name | Player turn");
         for (GamePojo gamePojo : gamesPojo.getGames().values()) {
-            if (gamePojo.getWinner() != "null" && gamePojo.getHistory().size() <= 1) {
+            if (gamePojo.getWinner() == null && gamePojo.getHistory().size() <= 1) {
                 validGames.add(gamePojo);
                 System.out.println(gamePojo.getId() + " | "
-                    + center(gamePojo.getPlayerO(), 13, false) + " | "
-                    + center(gamePojo.getPlayerX(), 13, false) + " |      "
-                    + gamePojo.getMove().getMark());
+                        + center(gamePojo.getPlayerO(), 13, false) + " | "
+                        + center(gamePojo.getPlayerX(), 13, false) + " |      "
+                        + gamePojo.getMove().getMark());
             }
         }
 
@@ -75,13 +104,10 @@ public class Game {
             for (GamePojo gamePojo : validGames) {
                 if (gamePojo.getId().endsWith(input)) {
 
-                    Player playerO, playerX;
-                    
                     System.out.println("\nInput the type of player for both players (H - Human, C - CPU, R - Remote)");
-                    //setPlayer(playerO, "Player O", gamePojo.getPlayerO());
-                    //setPlayer(playerX, "Player X", gamePojo.getPlayerX());
-                    //startExistingGame(gamePojo);
-                    return;
+                    String playerOClass = getPlayerClass("Player O", gamePojo.getPlayerO());
+                    String playerXClass = getPlayerClass("Player X", gamePojo.getPlayerX());
+                    return startExistingGame(gamePojo, playerOClass, playerXClass);
                 }
             }
 
@@ -89,17 +115,26 @@ public class Game {
         }
     }
 
-    private void setPlayer(Player player, String playerMark, String playerName) {
+    private String getPlayerClass(String playerMark, String playerName) {
         while (true) {
-            
+            System.out.print("Player " + playerMark + " (" + playerName + "): ");
+            String input = scanner.nextLine().trim();
+
+            input = input.toUpperCase();
+
+            if (input.equals("H") || input.equals("C") || input.equals("R")) {
+                return input;
+            }
+
+            System.out.println("Type of player not recognized. Please input H, C or R");
         }
     }
 
     private String getMinimumGameIdDigits(List<GamePojo> games) {
-        
+
         Integer digits = 3;
         Set<String> ids;
-        
+
         while (true) {
             ids = new HashSet<>();
             boolean hasDuplicates = false;
@@ -120,15 +155,20 @@ public class Game {
         }
     }
 
-    private void loop() {
+    private void loop(boolean playerXStarts) {
 
         boolean gameEnd = false;
         int round = 1;
         while (!gameEnd) {
 
             System.out.println("Round " + round);
-            gameEnd = playerTurn(playerO)
-                    || playerTurn(playerX);
+            if (playerXStarts) {
+                gameEnd = playerTurn(playerX)
+                        || playerTurn(playerO);
+            } else {
+                gameEnd = playerTurn(playerO)
+                        || playerTurn(playerX);
+            }
             round++;
         }
         System.out.println("Game Over");
@@ -173,10 +213,12 @@ public class Game {
         }
         return false;
     }
-    
-    private void setupRemoteGame() {
-        GameStartPojo gameStartPojo = new GameStartPojo(playerO.getName(), playerX.getName(), Piece.PlayerO.getMark());
-        gameId = api.startGame(gameStartPojo);
+
+    private void setupRemoteGame(String gameId) {
+        if (gameId == null) {
+            GameStartPojo gameStartPojo = new GameStartPojo(playerO.getName(), playerX.getName(), Piece.PlayerO.getMark());
+            gameId = api.startGame(gameStartPojo);
+        }
         board.setApiGame(api, gameId);
         playerO.setApiGame(api, gameId);
         playerX.setApiGame(api, gameId);
