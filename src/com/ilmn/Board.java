@@ -37,7 +37,7 @@ public class Board {
                 this.board[x][y] = Piece.fromMark(pojo.getBoard()[y].substring(x, x + 1));
             }
         }
-        moveList = new MoveList(pojo);
+        moveList = new MoveList();
     }
 
     private Piece pieceAt(Position position) {
@@ -171,12 +171,16 @@ public class Board {
         }
     }
 
-    public void setPlayers(Player player0, Player playerX) {
-        moveList.setPlayers(player0, playerX);
+    public void setPlayers(Player player0, Player playerX, Piece startingPlayer) {
+        moveList.setPlayers(player0, playerX, startingPlayer);
     }
 
     public void setApiGame(Api api, String gameId) {
         moveList.setApiGame(api, gameId);
         System.out.println("Starting remote game " + gameId);
+    }
+
+    public void setPreviousMoves(GamePojo gamePojo) {
+        moveList.setPreviousMoves(gamePojo);
     }
 }

@@ -10,6 +10,7 @@ import com.ilmn.Enums.Position;
 import com.ilmn.Players.Player;
 import com.ilmn.Players.Remote;
 import com.ilmn.Pojos.GamePojo;
+import com.ilmn.Pojos.MovePojo;
 import com.ilmn.Pojos.PlayerMovePojo;
 
 import static com.ilmn.Format.center;
@@ -33,15 +34,39 @@ public class MoveList {
     public MoveList() {
     }
     
-    public MoveList(GamePojo pojo) {
-        
-    }
-    
-    public void setPlayers(Player player0, Player playerX) {
-        this.player1 = player0;
-        this.player2 = playerX;
+    public void setPlayers(Player playerO, Player playerX, Piece startingPlayer) {
+        switch (startingPlayer) {
+            case PlayerO:
+                this.player1 = playerO;
+                this.player2 = playerX;
+                break;
+            case PlayerX:
+                this.player1 = playerX;
+                this.player2 = playerO;
+                break;
+            default:
+                throw new RuntimeException("Invalid starting player");
+        }
     }
 
+    public void setPreviousMoves(GamePojo gamePojo) {
+        boolean player1Move = true;
+        for (MovePojo movePojo : gamePojo.getHistory()) {
+            Player player = (player1Move ? player1 : player2);
+            
+            MoveType moveType = (gamePojo.getWinner() == null ? MoveType.other
+                    : gamePojo.getWinner().equals(player.getPlayerPiece().getMark()) ? MoveType.winning
+                    : Piece.fromMark(gamePojo.getWinner()).isPlayer() ? MoveType.losing
+                    : MoveType.other);
+
+            if (movePojo.getPiece() == null) {
+                addToList(new PlayerMove(player, movePojo.getNeutronDirn(), moveType));
+            } else {
+                addToList(new PlayerMove(player, movePojo.getNeutronDirn(), movePojo.getPiece(), movePojo.getPieceDirn(), moveType));
+            }
+        }
+    }
+    
     public void setApiGame(Api api, String gameId) {
         this.api = api;
         this.gameId = gameId;

@@ -121,4 +121,9 @@ public class GamePojo {
                 "\n, history=" + history +
                 "\n}";
     }
+    
+    public Piece getStartingPlayer() {
+        int evenNumberMoves = history.size() % 2;
+        return evenNumberMoves == 0 ? this.move : this.move.opponent();
+    }
 }
