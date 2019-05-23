@@ -77,8 +77,8 @@ public class Game {
         playerX = setNewPlayer(playerXName, playerXClass, Piece.PlayerX, board); 
         board.setPlayers(this.playerO, this.playerX, startingPlayer);
         board.show();
-        setupRemoteGame(null);
-        return false;
+        setupRemoteGame(null, startingPlayer);
+        return startingPlayer == Piece.PlayerX;
     }
 
     private boolean startExistingGame(GamePojo gamePojo, String playerOClass, String playerXClass) {
@@ -88,7 +88,7 @@ public class Game {
         board.setPlayers(playerO, playerX, gamePojo.getStartingPlayer());
         board.setPreviousMoves(gamePojo);
         board.show();
-        setupRemoteGame(gamePojo.getId());
+        setupRemoteGame(gamePojo.getId(), gamePojo.getStartingPlayer());
         return gamePojo.getMove().equals(Piece.PlayerX);
     }
 
@@ -235,9 +235,9 @@ public class Game {
         return false;
     }
 
-    private void setupRemoteGame(String gameId) {
+    private void setupRemoteGame(String gameId, Piece startingPlayer) {
         if (gameId == null) {
-            GameStartPojo gameStartPojo = new GameStartPojo(playerO.getName(), playerX.getName(), Piece.PlayerO.getMark());
+            GameStartPojo gameStartPojo = new GameStartPojo(playerO.getName(), playerX.getName(), startingPlayer.getMark());
             gameId = api.startGame(gameStartPojo);
         }
         board.setApiGame(api, gameId);
